@@ -2,6 +2,10 @@
 
 A responsive investment gains calculator with interactive charts. Gain or goal based.
 
+Demo live at https://opticoding.github.io/investment-gains-calculator/
+
+<img width="2560" height="1271" alt="chart2" src="https://github.com/user-attachments/assets/9a0a7cea-c73c-44b6-831e-43190c41a7f0" />
+
 - Project growth from an annual return %, or calculate the return % needed to reach a goal.
 - Set initial investments, recurring deposits, and withdrawals with custom schedules.
 - Adjust each input with a slider and editable minimum and maximum values.
