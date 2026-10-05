@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c1018">
+  <meta name="description" content="Explore investment growth with recurring deposits, withdrawals, and daily compounding. Calculate the annual return needed to reach your goal.">
+  <title>Compound | Investment gains calculator</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/calculator.js"></script>
+  <script defer src="js/preferences.js"></script>
+  <script defer src="js/curves.js"></script>
+  <script defer src="js/controls.js"></script>
+  <script defer src="js/chart.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="./index.html" aria-label="Compound home">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M5 25V18M13 25V13M21 25V7M29 25V3" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="m4 12 8-5 8 1 8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".45"/></svg>
+      <span>Compound<span class="brand-dot">.</span></span>
+    </a>
+    <span class="header-description">Investment gains calculator</span>
+    <button class="text-button about-button" id="about-button" aria-controls="about-dialog">How it works <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/></svg></button>
+  </header>
+
+  <main class="workspace" id="workspace">
+    <aside class="controls-panel" id="controls-panel" aria-label="Investment settings">
+      <div class="panel-heading"><div><h1>Your scenario</h1><p>Set your investment and schedule.</p></div><button id="reset-button" class="text-button" title="Restore default settings">Reset</button></div>
+      <div class="segmented mode-switch" role="group" aria-label="Calculation mode">
+        <button type="button" data-mode="gain" aria-pressed="true">Gain based</button>
+        <button type="button" data-mode="goal" aria-pressed="false">Goal based</button>
+      </div>
+      <form id="controls-form" novalidate>
+        <div class="currency-row"><span id="currency-label">Currency</span><div class="segmented currency-switch" role="group" aria-labelledby="currency-label"><button type="button" data-currency="SEK" aria-pressed="true">SEK</button><button type="button" data-currency="EUR" aria-pressed="false">EUR</button><button type="button" data-currency="USD" aria-pressed="false">USD</button></div></div>
+        <section class="control-section" aria-label="Starting investment"><div data-control="initial"></div></section>
+        <section class="control-section" aria-label="Return and duration"><div data-control="annual"></div><div id="goal-control" data-control="goal" hidden></div><div data-control="duration"></div></section>
+        <section class="control-section" aria-labelledby="deposit-heading"><h2 id="deposit-heading"><span class="section-dot deposit-dot"></span>Repeated deposits</h2><div data-control="deposit"></div><details class="schedule-details"><summary>Deposit schedule <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div data-control="depositInterval"></div><div data-control="depositOffset"></div></details></section>
+        <section class="control-section withdrawal-section" aria-labelledby="withdrawal-heading"><h2 id="withdrawal-heading"><span class="section-dot withdrawal-dot"></span>Repeated withdrawals</h2><div data-control="withdrawal"></div><details class="schedule-details"><summary>Withdrawal schedule <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div data-control="withdrawalInterval"></div><div data-control="withdrawalOffset"></div></details></section>
+      </form>
+      <p class="panel-footnote">Change the min and max values to set your slider range.</p>
+    </aside>
+
+    <section class="projection-panel" aria-labelledby="projection-title">
+      <div class="projection-heading"><div><div class="projection-caption"><span class="live-dot"></span><span id="projection-title">Your investment, over time</span></div><div class="balance-heading"><span id="final-balance">0</span><span class="balance-currency" id="balance-currency">SEK</span></div><p id="projection-subtitle" class="projection-subtitle">Projected balance in 20 years</p></div><button class="expand-button" id="expand-button" aria-expanded="false" aria-controls="controls-panel" title="Expand chart"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></svg><span id="expand-label">Expand chart</span></button></div>
+
+      <div class="metrics" aria-label="Projection summary">
+        <div class="metric"><span>Total invested</span><strong id="total-invested">0 SEK</strong></div>
+        <div class="metric"><span>Investment gain</span><strong class="gain-value" id="total-gain">0 SEK</strong></div>
+        <div class="metric"><span>Total withdrawn</span><strong id="total-withdrawn">0 SEK</strong></div>
+        <div class="metric return-metric"><span id="return-label">Annual return</span><strong id="annual-return">7%</strong></div>
+      </div>
+
+      <div class="chart-toolbar"><div class="segmented chart-types" role="group" aria-label="Chart type"><button type="button" data-chart="area" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 17 6-7 5 3 7-9v16H3Z"/></svg>Area</button><button type="button" data-chart="breakdown" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 12 7-6 11-2v16H3ZM3 16l7-3 11-2"/></svg>Breakdown</button></div><label class="switch-label"><input type="checkbox" id="bounds-toggle" checked><span class="switch" aria-hidden="true"></span><span>Return range</span></label></div>
+
+      <div class="chart-container" id="chart-container">
+        <canvas id="projection-chart" tabindex="0" role="img" aria-label="Investment projection chart. Use left and right arrow keys to explore daily values." aria-describedby="chart-instructions chart-summary"></canvas>
+        <div class="chart-tooltip" id="chart-tooltip" hidden></div>
+        <div class="chart-empty" id="chart-empty" hidden><span>No growth to plot yet</span><p>Add an initial investment or repeated deposit to start.</p></div>
+      </div>
+      <p class="sr-only" id="chart-summary" aria-live="polite" aria-atomic="true"></p>
+      <p class="sr-only" id="chart-instructions">Hover over the chart or touch and drag to see daily values. With the chart focused, use left and right arrows to move one day, or Shift and arrow keys to move thirty days. Home and End move to the first and last day. Escape closes the tooltip.</p>
+      <div class="chart-legend" id="chart-legend"><span><i class="legend-mark balance-mark"></i>Portfolio balance</span><span id="principal-legend" hidden><i class="legend-mark principal-mark"></i>Net invested</span><span id="gain-legend" hidden><i class="legend-mark gain-mark"></i>Gain</span><span id="min-legend" hidden><i class="legend-mark dashed min-mark"></i><span id="min-legend-text">1% return</span></span><span id="max-legend" hidden><i class="legend-mark dashed max-mark"></i><span id="max-legend-text">30% return</span></span></div>
+      <div class="projection-message" id="projection-message" role="status" hidden></div>
+    </section>
+  </main>
+
+  <dialog id="about-dialog" aria-labelledby="about-title">
+    <div class="dialog-heading">
+      <h2 id="about-title">How it works</h2>
+      <button id="close-about" class="icon-button" aria-label="Close explanation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+    <p>See how your money could grow over time.</p>
+    <ul>
+      <li>Choose how much to invest and for how many years.</li>
+      <li><strong>Annual gain</strong> is how much your money grows in a year. A 10% gain would turn 1,000 into 1,100 after one year.</li>
+      <li>Add regular <strong>deposits</strong> to put more money in, or <strong>withdrawals</strong> to take money out.</li>
+      <li>Change the deposit and withdrawal <strong>interval</strong> and <strong>start offset</strong> as needed.</li>
+      <li><strong>Gain based</strong> shows how your money could grow. <strong>Goal based</strong> shows the yearly gain you would need to reach a target amount.</li>
+    </ul>
+    <p class="dialog-note">The chart is an estimate. Real investments can go up or down.</p>
+    <button class="primary-button" id="done-about">Got it</button>
+  </dialog>
+  <noscript><div class="noscript">Enable JavaScript to use the calculator.</div></noscript>
+</body>
+</html>
